@@ -5,6 +5,7 @@ import com.intellij.database.dataSource.DatabaseConnectionManager;
 import com.intellij.database.dataSource.LocalDataSource;
 import com.intellij.database.psi.DbDataSource;
 import com.intellij.database.util.GuardedRef;
+import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.project.Project;
 import liquibase.command.DiffToChangeLogCommand;
 import liquibase.command.GenerateChangeLogCommand;
@@ -28,7 +29,7 @@ class LiquibaseWrapper {
         this.project = project;
     }
 
-    public String generateChangeLog(DbDataSource dataSource) throws Exception {
+    public String generateChangeLog(DbDataSource dataSource) {
 
         String generatedChangeLog;
         try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
@@ -48,12 +49,16 @@ class LiquibaseWrapper {
             command.execute();
 
             generatedChangeLog = new String(byteStream.toByteArray(), StandardCharsets.UTF_8);
+        } catch (ProcessCanceledException processCanceledEx) {
+            throw processCanceledEx;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
         return generatedChangeLog;
     }
 
-    public String generateDiff(DbDataSource target, DbDataSource reference) throws Exception {
+    public String generateDiff(DbDataSource target, DbDataSource reference) {
         String diffChangeLog;
         try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
              PrintStream printStream = new PrintStream(byteStream, true, "utf-8");
@@ -76,6 +81,10 @@ class LiquibaseWrapper {
             command.execute();
 
             diffChangeLog = new String(byteStream.toByteArray(), StandardCharsets.UTF_8);
+        } catch (ProcessCanceledException processCanceledEx) {
+            throw processCanceledEx;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
         return diffChangeLog;

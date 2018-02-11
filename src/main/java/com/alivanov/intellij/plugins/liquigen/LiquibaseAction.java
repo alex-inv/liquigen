@@ -12,6 +12,8 @@ public abstract class LiquibaseAction extends AnAction {
     static final String LIQUIGEN_GROUP_ID = "liquigen";
     static final String LIQUIGEN_ERROR_MESSAGE_TITLE = "Error occurred during generating a changeset.";
 
+    static final String LIQUIGEN_BACKGROUND_TASK_NAME = "Generating change log...";
+
     @Override
     public void update(AnActionEvent e) {
         final Project project = e.getProject();
