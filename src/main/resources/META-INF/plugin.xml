@@ -1,0 +1,50 @@
+<idea-plugin>
+    <id>com.alivanov.intellij.plugins.liquigen</id>
+    <name>Liquigen</name>
+    <version>0.01</version>
+    <vendor email="invs.man@gmail.com">Alexey Ivanov</vendor>
+
+    <description><![CDATA[
+        <h1>Liquigen - Liquibase Changeset Generation</h1><br/>
+    ]]></description>
+
+    <change-notes><![CDATA[
+        <h1>Liquigen plugin</h1><br/>
+
+        <ul>
+            <li>
+                Liquigen v0.0.1<br/>
+                Initial release. Supports diffToChangeLog and generateChangeLog commands.
+            </li>
+        </ul>
+    ]]>
+    </change-notes>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+    <idea-version since-build="173.0"/>
+
+    <depends>com.intellij.database</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+    </extensions>
+
+    <actions>
+        <group id="LiquibaseGroup" text="Liquibase" popup="true">
+            <add-to-group group-id="DatabaseViewPopupMenu" anchor="after"
+                          relative-to-action="DatabaseView.Restore.Native"/>
+
+            <action id="generateChangesetAction"
+                    class="com.alivanov.intellij.plugins.liquigen.GenerateChangesetAction"
+                    text="Generate Changeset"
+                    description="Generate Liquibase Changeset for Data Source">
+            </action>
+
+            <action id="compareDatabaseAction"
+                    class="com.alivanov.intellij.plugins.liquigen.CompareDatabaseAction"
+                    text="Generate Diff..."
+                    description="Generate Liquibase Difference for Data Source according to Reference Data Source">
+            </action>
+        </group>
+    </actions>
+
+</idea-plugin>

@@ -1,0 +1,19 @@
+plugins {
+    id 'org.jetbrains.intellij' version '0.2.5'
+}
+
+apply plugin: "java"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.liquibase:liquibase-core:3.5.3'
+}
+
+intellij {
+    version='IU-2017.3.3'
+    plugins = ['DatabaseTools']
+    pluginName 'liquigen'
+}
