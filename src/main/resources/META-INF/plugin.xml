@@ -1,22 +1,24 @@
 <idea-plugin>
     <id>com.alivanov.intellij.plugins.liquigen</id>
     <name>Liquigen</name>
-    <version>0.01</version>
+    <version>0.0.2</version>
     <vendor email="invs.man@gmail.com">Alexey Ivanov</vendor>
 
     <description><![CDATA[
-        <h1>Liquigen - Liquibase Changeset Generation</h1><br/>
-    ]]></description>
+        <h1>Liquibase Changeset Generation</h1><br/>
 
-    <change-notes><![CDATA[
+        Provides integration of Liquibase Command Tools.<br/>
+        Currently following options are included:<br/>
         <ul>
             <li>
-                Liquigen v0.0.1<br/>
-                Initial release. Supports diffToChangeLog and generateChangeLog commands.
+                Generate a full XML changelog from a specific Data Source
+            </li>
+            <li>
+                Compare target Data Source to reference in an XML changelog
             </li>
         </ul>
-    ]]>
-    </change-notes>
+        Github page: <a href="https://github.com/iman89/liquigen">https://github.com/iman89/liquigen</a>
+    ]]></description>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
     <idea-version since-build="173.0"/>
