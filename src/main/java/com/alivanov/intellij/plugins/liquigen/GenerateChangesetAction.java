@@ -1,6 +1,10 @@
 package com.alivanov.intellij.plugins.liquigen;
 
+import com.intellij.database.model.DasObject;
 import com.intellij.database.psi.DbDataSource;
+import com.intellij.database.psi.DbElement;
+import com.intellij.database.psi.DbNamespaceImpl;
+import com.intellij.database.psi.DbPsiFacade;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
@@ -10,7 +14,6 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
-import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,28 +27,37 @@ public class GenerateChangesetAction extends LiquibaseAction {
         }
 
         final PsiElement psiElement = e.getData(LangDataKeys.PSI_ELEMENT);
-        if (!isDataSourceSelected(psiElement)) {
+        if (!isCorrectDatabaseElementSelected(psiElement)) {
             return;
         }
 
-        final DbDataSource dataSource = (DbDataSource) psiElement;
-        new GenerateChangeLogTask(project, LIQUIGEN_BACKGROUND_TASK_NAME, dataSource).queue();
+        final DbElement dbElement = (DbElement) psiElement;
+        final DbDataSource dataSource = DbPsiFacade.getInstance(project).findDataSource(dbElement);
+        new GenerateChangeLogTask(project, dbElement, dataSource).queue();
     }
 
     private static class GenerateChangeLogTask extends Task.Backgroundable {
 
+        private DbElement dbElement;
         private DbDataSource dataSource;
         private String changeLog;
 
-        GenerateChangeLogTask(@Nullable Project project, @Nls @NotNull String title, DbDataSource dataSource) {
-            super(project, title, true);
+        GenerateChangeLogTask(@Nullable Project project, DbElement dbElement, DbDataSource dataSource) {
+            super(project, LIQUIGEN_BACKGROUND_TASK_NAME, true);
+            this.dbElement = dbElement;
             this.dataSource = dataSource;
         }
 
         @Override
         public void run(@NotNull ProgressIndicator indicator) {
+            indicator.setText(LIQUIGEN_BACKGROUND_TASK_NAME);
+
             final LiquibaseWrapper liquibaseWrapper = new LiquibaseWrapper(getProject());
-            changeLog = liquibaseWrapper.generateChangeLog(dataSource);
+            if (dbElement instanceof DbDataSource || dbElement instanceof DbNamespaceImpl) {
+                changeLog = liquibaseWrapper.generateChangeLog(dataSource);
+            } else {
+                changeLog = liquibaseWrapper.generateChangeLog(dbElement, dataSource);
+            }
         }
 
         @Override
@@ -60,5 +72,10 @@ public class GenerateChangesetAction extends LiquibaseAction {
                 Notifications.Bus.notify(notification);
             }
         }
+    }
+
+    @Override
+    protected boolean isCorrectDatabaseElementSelected(PsiElement element) {
+        return element instanceof DbElement;
     }
 }

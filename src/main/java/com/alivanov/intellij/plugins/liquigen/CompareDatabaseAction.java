@@ -32,7 +32,7 @@ public class CompareDatabaseAction extends LiquibaseAction {
         }
 
         final PsiElement psiElement = e.getData(LangDataKeys.PSI_ELEMENT);
-        if (!isDataSourceSelected(psiElement)) {
+        if (!isCorrectDatabaseElementSelected(psiElement)) {
             return;
         }
 
@@ -76,6 +76,8 @@ public class CompareDatabaseAction extends LiquibaseAction {
 
         @Override
         public void run(@NotNull ProgressIndicator indicator) {
+            indicator.setText(LIQUIGEN_BACKGROUND_TASK_NAME);
+
             final LiquibaseWrapper liquibaseWrapper = new LiquibaseWrapper(getProject());
             changeLog = liquibaseWrapper.generateDiff(targetDataSource, referenceDataSource);
         }
@@ -96,5 +98,9 @@ public class CompareDatabaseAction extends LiquibaseAction {
 
     private static String getChangeLogName(String targetDataSourceName, String referenceDataSourceName) {
         return targetDataSourceName + "_" + referenceDataSourceName;
+    }
+
+    protected boolean isCorrectDatabaseElementSelected(PsiElement element) {
+        return element instanceof DbDataSource;
     }
 }

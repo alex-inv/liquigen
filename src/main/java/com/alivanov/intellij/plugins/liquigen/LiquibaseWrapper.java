@@ -4,6 +4,7 @@ import com.intellij.database.dataSource.DatabaseConnection;
 import com.intellij.database.dataSource.DatabaseConnectionManager;
 import com.intellij.database.dataSource.LocalDataSource;
 import com.intellij.database.psi.DbDataSource;
+import com.intellij.database.psi.DbElement;
 import com.intellij.database.util.GuardedRef;
 import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.project.Project;
@@ -14,6 +15,7 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.diff.compare.CompareControl;
 import liquibase.diff.output.DiffOutputControl;
+import liquibase.diff.output.StandardObjectChangeFilter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -29,8 +31,15 @@ class LiquibaseWrapper {
         this.project = project;
     }
 
-    public String generateChangeLog(DbDataSource dataSource) {
+    public String generateChangeLog(DbElement dbElement, DbDataSource dataSource) {
+        return doGenerateChangeLog(dataSource, createFilteredDiffOutputControl(dbElement));
+    }
 
+    public String generateChangeLog(DbDataSource dataSource) {
+        return doGenerateChangeLog(dataSource, getDefaultDiffOutputControl());
+    }
+
+    private String doGenerateChangeLog(DbDataSource dataSource, DiffOutputControl diffOutputControl) {
         String generatedChangeLog;
         try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
              PrintStream printStream = new PrintStream(byteStream, true, "utf-8");
@@ -44,7 +53,7 @@ class LiquibaseWrapper {
             command.setReferenceDatabase(referenceDatabase)
                     .setOutputStream(printStream)
                     .setCompareControl(getDefaultCompareControl());
-            command.setDiffOutputControl(getDefaultDiffOutputControl());
+            command.setDiffOutputControl(diffOutputControl);
 
             command.execute();
 
@@ -100,7 +109,19 @@ class LiquibaseWrapper {
         return new CompareControl();
     }
 
-    // Do not output schema, catalog or tablespace to changelog result
+    private DiffOutputControl createFilteredDiffOutputControl(DbElement dbElement) {
+        DiffOutputControl diffOutputControl = new DiffOutputControl();
+
+        diffOutputControl.setIncludeSchema(false);
+        diffOutputControl.setIncludeCatalog(false);
+        diffOutputControl.setIncludeTablespace(false);
+
+        diffOutputControl.setObjectChangeFilter(
+                new StandardObjectChangeFilter(StandardObjectChangeFilter.FilterType.INCLUDE, dbElement.getName()));
+
+        return diffOutputControl;
+    }
+
     private DiffOutputControl getDefaultDiffOutputControl() {
         DiffOutputControl diffOutputControl = new DiffOutputControl();
 
@@ -110,5 +131,4 @@ class LiquibaseWrapper {
 
         return diffOutputControl;
     }
-
 }
