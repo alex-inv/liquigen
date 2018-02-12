@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.alivanov.intellij.plugins.liquigen</id>
     <name>Liquigen</name>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
     <vendor email="invs.man@gmail.com">Alexey Ivanov</vendor>
 
     <description><![CDATA[
@@ -12,6 +12,9 @@
         <ul>
             <li>
                 Generate a full XML changelog from a specific Data Source
+            </li>
+            <li>
+                Generate a XML changelog for a single Database Object
             </li>
             <li>
                 Compare target Data Source to reference in an XML changelog
