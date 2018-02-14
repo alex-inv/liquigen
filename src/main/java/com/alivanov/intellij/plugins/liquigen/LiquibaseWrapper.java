@@ -16,6 +16,7 @@ import liquibase.database.jvm.JdbcConnection;
 import liquibase.diff.compare.CompareControl;
 import liquibase.diff.output.DiffOutputControl;
 import liquibase.diff.output.StandardObjectChangeFilter;
+import liquibase.exception.DatabaseException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -32,11 +33,11 @@ class LiquibaseWrapper {
     }
 
     public String generateChangeLog(DbElement dbElement, DbDataSource dataSource) {
-        return doGenerateChangeLog(dataSource, createFilteredDiffOutputControl(dbElement));
+        return doGenerateChangeLog(dataSource, createSingleElementFilteredDiffOutputControl(dbElement));
     }
 
     public String generateChangeLog(DbDataSource dataSource) {
-        return doGenerateChangeLog(dataSource, getDefaultDiffOutputControl());
+        return doGenerateChangeLog(dataSource, createDefaultDiffOutputControl());
     }
 
     private String doGenerateChangeLog(DbDataSource dataSource, DiffOutputControl diffOutputControl) {
@@ -45,14 +46,12 @@ class LiquibaseWrapper {
              PrintStream printStream = new PrintStream(byteStream, true, "utf-8");
              GuardedRef<DatabaseConnection> connectionRef = acquireConnection(dataSource)
         ) {
-            Connection conn = connectionRef.get().getJdbcConnection();
-            Database referenceDatabase = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(conn));
+            Database referenceDatabase = getDatabase(connectionRef);
 
             GenerateChangeLogCommand command = new GenerateChangeLogCommand();
-
             command.setReferenceDatabase(referenceDatabase)
                     .setOutputStream(printStream)
-                    .setCompareControl(getDefaultCompareControl());
+                    .setCompareControl(createDefaultCompareControl());
             command.setDiffOutputControl(diffOutputControl);
 
             command.execute();
@@ -74,18 +73,15 @@ class LiquibaseWrapper {
              GuardedRef<DatabaseConnection> targetConnectionRef = acquireConnection(target);
              GuardedRef<DatabaseConnection> referenceConnectionRef = acquireConnection(reference)
         ) {
-            Connection targetConn = targetConnectionRef.get().getJdbcConnection();
-            Database targetDatabase = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(targetConn));
-
-            Connection referenceConn = referenceConnectionRef.get().getJdbcConnection();
-            Database referenceDatabase = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(referenceConn));
+            Database targetDatabase = getDatabase(targetConnectionRef);
+            Database referenceDatabase = getDatabase(referenceConnectionRef);
 
             DiffToChangeLogCommand command = new DiffToChangeLogCommand();
             command.setReferenceDatabase(referenceDatabase)
                     .setTargetDatabase(targetDatabase)
                     .setOutputStream(printStream)
-                    .setCompareControl(getDefaultCompareControl());
-            command.setDiffOutputControl(getDefaultDiffOutputControl());
+                    .setCompareControl(createDefaultCompareControl());
+            command.setDiffOutputControl(createDefaultDiffOutputControl());
 
             command.execute();
 
@@ -104,17 +100,19 @@ class LiquibaseWrapper {
                 .build(this.project, (LocalDataSource) dataSource.getDelegate()).create();
     }
 
+    private Database getDatabase(GuardedRef<DatabaseConnection> connectionRef) throws DatabaseException {
+        Connection targetConn = connectionRef.get().getJdbcConnection();
+        return DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(targetConn));
+    }
+
     // Compare default catalogs and schemas, and compare only default database objects - no data included
-    private CompareControl getDefaultCompareControl() {
+    private CompareControl createDefaultCompareControl() {
         return new CompareControl();
     }
 
-    private DiffOutputControl createFilteredDiffOutputControl(DbElement dbElement) {
-        DiffOutputControl diffOutputControl = new DiffOutputControl();
-
-        diffOutputControl.setIncludeSchema(false);
-        diffOutputControl.setIncludeCatalog(false);
-        diffOutputControl.setIncludeTablespace(false);
+    // Output only single database element to result XML changelog
+    private DiffOutputControl createSingleElementFilteredDiffOutputControl(DbElement dbElement) {
+        DiffOutputControl diffOutputControl = createDefaultDiffOutputControl();
 
         diffOutputControl.setObjectChangeFilter(
                 new StandardObjectChangeFilter(StandardObjectChangeFilter.FilterType.INCLUDE, dbElement.getName()));
@@ -122,7 +120,8 @@ class LiquibaseWrapper {
         return diffOutputControl;
     }
 
-    private DiffOutputControl getDefaultDiffOutputControl() {
+    // Do not include information about schema, catalog or tablespace to result XML changelog
+    private DiffOutputControl createDefaultDiffOutputControl() {
         DiffOutputControl diffOutputControl = new DiffOutputControl();
 
         diffOutputControl.setIncludeSchema(false);
