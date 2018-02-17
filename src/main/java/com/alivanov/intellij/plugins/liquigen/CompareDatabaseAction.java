@@ -19,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,19 +32,28 @@ public class CompareDatabaseAction extends LiquibaseAction {
             return;
         }
 
-        final PsiElement psiElement = e.getData(LangDataKeys.PSI_ELEMENT);
-        if (!isCorrectDatabaseElementSelected(psiElement)) {
+        final PsiElement[] psiElementArray = e.getData(LangDataKeys.PSI_ELEMENT_ARRAY);
+        if (psiElementArray == null || psiElementArray.length == 0) {
             return;
         }
 
-        final DbDataSource targetDataSource = (DbDataSource) psiElement;
-        final List<DbDataSource> referenceDataSources = collectOtherDataSourcesInProject(project, targetDataSource);
-        showDataSourceSelectionPopup(e, project, targetDataSource, referenceDataSources);
+        final DbDataSource targetDataSource = (DbDataSource) psiElementArray[0];
+
+        if (isSingleDataSourceSelected(psiElementArray)) {
+            final List<DbDataSource> referenceDataSources = collectOtherDataSourcesInProject(project, targetDataSource);
+            showDataSourceSelectionPopup(e, project, targetDataSource, referenceDataSources);
+        } else if (areTwoDataSourcesSelected(psiElementArray)) {
+            final DbDataSource referenceDataSource = (DbDataSource) psiElementArray[1];
+            generateDiffChangeLog(project, targetDataSource, referenceDataSource);
+        }
     }
 
     private void showDataSourceSelectionPopup(AnActionEvent e, Project project, DbDataSource targetDataSource, List<DbDataSource> referenceDataSources) {
-        final JList<DbDataSource> list = new JBList<>(JBList.createDefaultListModel(
-                referenceDataSources.toArray(new DbDataSource[referenceDataSources.size()])));
+        final JBList<DbDataSource> list = new JBList<>(JBList.createDefaultListModel(referenceDataSources));
+
+        list.getEmptyText().setText(LIQUIGEN_NO_DATA_SOURCES_FOUND);
+        list.setCellRenderer(new DataSourceCellRenderer());
+
         JBPopup popup = JBPopupFactory.getInstance()
                 .createListPopupBuilder(list)
                 .setTitle("Select reference Data Source")
@@ -100,7 +110,43 @@ public class CompareDatabaseAction extends LiquibaseAction {
         return targetDataSourceName + "_" + referenceDataSourceName;
     }
 
-    protected boolean isCorrectDatabaseElementSelected(PsiElement element) {
-        return element instanceof DbDataSource;
+    @Override
+    public void update(AnActionEvent e) {
+        final Project project = e.getProject();
+        if (project == null) {
+            return;
+        }
+
+        final PsiElement[] psiElementArray = e.getData(LangDataKeys.PSI_ELEMENT_ARRAY);
+        if (psiElementArray == null || psiElementArray.length == 0) {
+            e.getPresentation().setEnabledAndVisible(false);
+            return;
+        }
+
+        e.getPresentation().setEnabledAndVisible(isSingleDataSourceSelected(psiElementArray) || areTwoDataSourcesSelected(psiElementArray));
+        super.update(e);
+    }
+
+    private boolean isSingleDataSourceSelected(PsiElement[] psiElementArray) {
+        return psiElementArray.length == 1 && psiElementArray[0] instanceof DbDataSource;
+    }
+
+    private boolean areTwoDataSourcesSelected(PsiElement[] psiElementArray) {
+        return psiElementArray.length == 2 && psiElementArray[0] instanceof DbDataSource && psiElementArray[1] instanceof DbDataSource;
+    }
+
+    private static class DataSourceCellRenderer extends DefaultListCellRenderer {
+        @Override
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+
+            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+            DbDataSource dataSource = (DbDataSource) value;
+
+            setIcon(dataSource.getIcon());
+            setText(dataSource.getName());
+
+            return this;
+        }
     }
 }

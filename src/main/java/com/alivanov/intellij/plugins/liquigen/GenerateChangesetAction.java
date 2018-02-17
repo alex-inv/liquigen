@@ -1,6 +1,5 @@
 package com.alivanov.intellij.plugins.liquigen;
 
-import com.intellij.database.model.DasObject;
 import com.intellij.database.psi.DbDataSource;
 import com.intellij.database.psi.DbElement;
 import com.intellij.database.psi.DbNamespaceImpl;
@@ -74,7 +73,6 @@ public class GenerateChangesetAction extends LiquibaseAction {
         }
     }
 
-    @Override
     protected boolean isCorrectDatabaseElementSelected(PsiElement element) {
         return element instanceof DbElement;
     }
