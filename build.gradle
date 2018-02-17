@@ -15,7 +15,7 @@ dependencies {
 }
 
 intellij {
-    version='IU-2017.3.3'
+    version='IU-2017.3'
     plugins = ['DatabaseTools']
     pluginName 'liquigen'
 }

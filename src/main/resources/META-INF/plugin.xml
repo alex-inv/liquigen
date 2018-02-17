@@ -24,10 +24,9 @@
     ]]></description>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-    <idea-version since-build="173.0"/>
+    <idea-version since-build="173.*"/>
 
     <depends>com.intellij.database</depends>
-    <depends optional="true">com.intellij.modules.ultimate</depends>
 
     <extensions defaultExtensionNs="com.intellij">
     </extensions>
@@ -45,7 +44,7 @@
 
             <action id="compareDatabaseAction"
                     class="com.alivanov.intellij.plugins.liquigen.CompareDatabaseAction"
-                    text="Generate Diff..."
+                    text="Generate Diff"
                     description="Generate Liquibase Difference for Data Source according to Reference Data Source">
             </action>
         </group>
