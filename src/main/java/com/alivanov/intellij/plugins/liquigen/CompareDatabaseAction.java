@@ -5,6 +5,7 @@ import com.intellij.database.psi.DbPsiFacade;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
+import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -23,7 +24,9 @@ import java.awt.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CompareDatabaseAction extends LiquibaseAction {
+import static com.alivanov.intellij.plugins.liquigen.Constants.*;
+
+public class CompareDatabaseAction extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent e) {

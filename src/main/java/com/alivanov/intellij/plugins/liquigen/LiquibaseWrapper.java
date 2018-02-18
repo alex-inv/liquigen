@@ -3,8 +3,10 @@ package com.alivanov.intellij.plugins.liquigen;
 import com.intellij.database.dataSource.DatabaseConnection;
 import com.intellij.database.dataSource.DatabaseConnectionManager;
 import com.intellij.database.dataSource.LocalDataSource;
+import com.intellij.database.model.DasObject;
 import com.intellij.database.psi.DbDataSource;
 import com.intellij.database.psi.DbElement;
+import com.intellij.database.psi.DbNamespaceImpl;
 import com.intellij.database.util.GuardedRef;
 import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.project.Project;
@@ -23,6 +25,9 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 class LiquibaseWrapper {
 
@@ -32,15 +37,9 @@ class LiquibaseWrapper {
         this.project = project;
     }
 
-    public String generateChangeLog(DbElement dbElement, DbDataSource dataSource) {
-        return doGenerateChangeLog(dataSource, createSingleElementFilteredDiffOutputControl(dbElement));
-    }
+    public String generateChangeLog(List<DbElement> dbElements, DbDataSource dataSource) {
+        DiffOutputControl diffOutputControl = createDiffOutputControlForElements(dbElements);
 
-    public String generateChangeLog(DbDataSource dataSource) {
-        return doGenerateChangeLog(dataSource, createDefaultDiffOutputControl());
-    }
-
-    private String doGenerateChangeLog(DbDataSource dataSource, DiffOutputControl diffOutputControl) {
         String generatedChangeLog;
         try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
              PrintStream printStream = new PrintStream(byteStream, true, "utf-8");
@@ -64,6 +63,18 @@ class LiquibaseWrapper {
         }
 
         return generatedChangeLog;
+    }
+
+    private DiffOutputControl createDiffOutputControlForElements(List<DbElement> dbElements) {
+        Set<String> dbElementNames = dbElements.stream().filter(dbElement -> !(dbElement instanceof DbDataSource || dbElement instanceof DbNamespaceImpl))
+                .map(DasObject::getName).collect(Collectors.toSet());
+
+        if (dbElementNames.size() == 0) {
+            // Only data sources or databases are selected
+            return createDefaultDiffOutputControl();
+        } else {
+            return createFilteredDiffOutputControl(dbElementNames);
+        }
     }
 
     public String generateDiff(DbDataSource target, DbDataSource reference) {
@@ -110,12 +121,12 @@ class LiquibaseWrapper {
         return new CompareControl();
     }
 
-    // Output only single database element to result XML changelog
-    private DiffOutputControl createSingleElementFilteredDiffOutputControl(DbElement dbElement) {
+    private DiffOutputControl createFilteredDiffOutputControl(Set<String> dbElementNames) {
         DiffOutputControl diffOutputControl = createDefaultDiffOutputControl();
 
+        String elementFilter = String.join(", ", dbElementNames);
         diffOutputControl.setObjectChangeFilter(
-                new StandardObjectChangeFilter(StandardObjectChangeFilter.FilterType.INCLUDE, dbElement.getName()));
+                new StandardObjectChangeFilter(StandardObjectChangeFilter.FilterType.INCLUDE, elementFilter));
 
         return diffOutputControl;
     }
