@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.alivanov.intellij.plugins.liquigen</id>
     <name>Liquigen</name>
-    <version>0.0.3</version>
+    <version>0.0.4</version>
     <vendor email="invs.man@gmail.com">Alexey Ivanov</vendor>
 
     <description><![CDATA[
@@ -14,7 +14,7 @@
                 Generate a full XML changelog from a specific Data Source
             </li>
             <li>
-                Generate a XML changelog for a single Database Object
+                Generate a XML changelog for a subset of database objects of a Data Source
             </li>
             <li>
                 Compare target Data Source to reference in an XML changelog
@@ -22,6 +22,20 @@
         </ul>
         Github page: <a href="https://github.com/iman89/liquigen">https://github.com/iman89/liquigen</a>
     ]]></description>
+
+    <change-notes><![CDATA[
+        <ul>
+            <li>
+                Liquigen v0.0.4<br/>
+                Added multi-select support in Database View
+            </li>
+            <li>
+                Liquigen v0.0.3<br/>
+                Initial plugin release
+            </li>
+        </ul>
+    ]]>
+    </change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
     <idea-version since-build="173.*"/>
