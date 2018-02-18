@@ -26,11 +26,11 @@
     <change-notes><![CDATA[
         <ul>
             <li>
-                Liquigen v0.0.4<br/>
+                v0.0.4<br/>
                 Added multi-select support in Database View
             </li>
             <li>
-                Liquigen v0.0.3<br/>
+                v0.0.3<br/>
                 Initial plugin release
             </li>
         </ul>
