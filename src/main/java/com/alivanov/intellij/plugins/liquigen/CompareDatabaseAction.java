@@ -72,7 +72,9 @@ public class CompareDatabaseAction extends AnAction {
     }
 
     private void generateDiffChangeLog(Project project, DbDataSource targetDataSource, DbDataSource referenceDataSource) {
-        new CompareDatabaseTask(project, LIQUIGEN_BACKGROUND_TASK_NAME, targetDataSource, referenceDataSource).queue();
+        if (referenceDataSource != null) {
+            new CompareDatabaseTask(project, LIQUIGEN_BACKGROUND_TASK_NAME, targetDataSource, referenceDataSource).queue();
+        }
     }
 
     private static class CompareDatabaseTask extends Task.Backgroundable {

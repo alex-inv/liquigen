@@ -1,5 +1,6 @@
 package com.alivanov.intellij.plugins.liquigen;
 
+import com.alivanov.intellij.plugins.liquigen.command.AuthorParametrizedDiffToChangeLogCommand;
 import com.intellij.database.dataSource.DatabaseConnection;
 import com.intellij.database.dataSource.DatabaseConnectionManager;
 import com.intellij.database.dataSource.LocalDataSource;
@@ -10,7 +11,6 @@ import com.intellij.database.psi.DbNamespaceImpl;
 import com.intellij.database.util.GuardedRef;
 import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.project.Project;
-import liquibase.command.DiffToChangeLogCommand;
 import liquibase.command.GenerateChangeLogCommand;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
@@ -52,6 +52,7 @@ class LiquibaseWrapper {
                     .setOutputStream(printStream)
                     .setCompareControl(createDefaultCompareControl());
             command.setDiffOutputControl(diffOutputControl);
+            command.setAuthor(System.getProperty("user.name"));
 
             command.execute();
 
@@ -87,12 +88,13 @@ class LiquibaseWrapper {
             Database targetDatabase = getDatabase(targetConnectionRef);
             Database referenceDatabase = getDatabase(referenceConnectionRef);
 
-            DiffToChangeLogCommand command = new DiffToChangeLogCommand();
+            AuthorParametrizedDiffToChangeLogCommand command = new AuthorParametrizedDiffToChangeLogCommand();
             command.setReferenceDatabase(referenceDatabase)
                     .setTargetDatabase(targetDatabase)
                     .setOutputStream(printStream)
                     .setCompareControl(createDefaultCompareControl());
             command.setDiffOutputControl(createDefaultDiffOutputControl());
+            command.setAuthor(System.getProperty("user.name"));
 
             command.execute();
 
