@@ -27,6 +27,7 @@
     <idea-version since-build="173.*"/>
 
     <depends>com.intellij.database</depends>
+    <depends optional="true">com.intellij.modules.ultimate</depends>
 
     <extensions defaultExtensionNs="com.intellij">
     </extensions>
