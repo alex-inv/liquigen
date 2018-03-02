@@ -10,6 +10,8 @@ import com.intellij.database.psi.DbElement;
 import com.intellij.database.psi.DbNamespaceImpl;
 import com.intellij.database.util.GuardedRef;
 import com.intellij.openapi.progress.ProcessCanceledException;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressIndicatorProvider;
 import com.intellij.openapi.project.Project;
 import liquibase.command.GenerateChangeLogCommand;
 import liquibase.database.Database;
@@ -29,9 +31,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.alivanov.intellij.plugins.liquigen.Constants.LIQUIGEN_BACKGROUND_TASK_NAME;
+
 class LiquibaseWrapper {
 
-    private Project project;
+    private final Project project;
 
     LiquibaseWrapper(Project project) {
         this.project = project;
@@ -45,6 +49,8 @@ class LiquibaseWrapper {
              PrintStream printStream = new PrintStream(byteStream, true, "utf-8");
              GuardedRef<DatabaseConnection> connectionRef = acquireConnection(dataSource)
         ) {
+            startIndicatorProgress();
+
             Database referenceDatabase = getDatabase(connectionRef);
 
             GenerateChangeLogCommand command = new GenerateChangeLogCommand();
@@ -57,6 +63,8 @@ class LiquibaseWrapper {
             command.execute();
 
             generatedChangeLog = new String(byteStream.toByteArray(), StandardCharsets.UTF_8);
+
+            finishIndicatorProgress();
         } catch (ProcessCanceledException processCanceledEx) {
             throw processCanceledEx;
         } catch (Exception e) {
@@ -85,6 +93,8 @@ class LiquibaseWrapper {
              GuardedRef<DatabaseConnection> targetConnectionRef = acquireConnection(target);
              GuardedRef<DatabaseConnection> referenceConnectionRef = acquireConnection(reference)
         ) {
+            startIndicatorProgress();
+
             Database targetDatabase = getDatabase(targetConnectionRef);
             Database referenceDatabase = getDatabase(referenceConnectionRef);
 
@@ -99,6 +109,8 @@ class LiquibaseWrapper {
             command.execute();
 
             diffChangeLog = new String(byteStream.toByteArray(), StandardCharsets.UTF_8);
+
+            finishIndicatorProgress();
         } catch (ProcessCanceledException processCanceledEx) {
             throw processCanceledEx;
         } catch (Exception e) {
@@ -142,5 +154,23 @@ class LiquibaseWrapper {
         diffOutputControl.setIncludeTablespace(false);
 
         return diffOutputControl;
+    }
+
+    private void startIndicatorProgress() {
+        ProgressIndicator indicator = ProgressIndicatorProvider.getGlobalProgressIndicator();
+
+        if (indicator != null) {
+            indicator.setText(LIQUIGEN_BACKGROUND_TASK_NAME);
+            indicator.setIndeterminate(true);
+        }
+    }
+
+    private void finishIndicatorProgress() {
+        ProgressIndicator indicator = ProgressIndicatorProvider.getGlobalProgressIndicator();
+
+        if (indicator != null) {
+            indicator.setIndeterminate(false);
+            indicator.setFraction(1.0);
+        }
     }
 }

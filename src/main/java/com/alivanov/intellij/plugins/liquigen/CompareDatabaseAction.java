@@ -54,7 +54,7 @@ public class CompareDatabaseAction extends AnAction {
     private void showDataSourceSelectionPopup(AnActionEvent e, Project project, DbDataSource targetDataSource, List<DbDataSource> referenceDataSources) {
         final JBList<DbDataSource> list = new JBList<>(JBList.createDefaultListModel(referenceDataSources));
 
-        list.getEmptyText().setText(LIQUIGEN_NO_DATA_SOURCES_FOUND);
+        list.setEmptyText(LIQUIGEN_NO_DATA_SOURCES_FOUND);
         list.setCellRenderer(new DataSourceCellRenderer());
 
         JBPopup popup = JBPopupFactory.getInstance()
@@ -79,8 +79,8 @@ public class CompareDatabaseAction extends AnAction {
 
     private static class CompareDatabaseTask extends Task.Backgroundable {
 
-        private DbDataSource targetDataSource;
-        private DbDataSource referenceDataSource;
+        private final DbDataSource targetDataSource;
+        private final DbDataSource referenceDataSource;
         private String changeLog;
 
         CompareDatabaseTask(@Nullable Project project, @Nls @NotNull String title, DbDataSource targetDataSource, DbDataSource referenceDataSource) {
@@ -91,8 +91,6 @@ public class CompareDatabaseAction extends AnAction {
 
         @Override
         public void run(@NotNull ProgressIndicator indicator) {
-            indicator.setText(LIQUIGEN_BACKGROUND_TASK_NAME);
-
             final LiquibaseWrapper liquibaseWrapper = new LiquibaseWrapper(getProject());
             changeLog = liquibaseWrapper.generateDiff(targetDataSource, referenceDataSource);
         }

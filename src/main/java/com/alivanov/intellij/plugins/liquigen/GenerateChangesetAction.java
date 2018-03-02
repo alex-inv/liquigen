@@ -62,8 +62,8 @@ public class GenerateChangesetAction extends AnAction {
 
     private static class GenerateChangeLogTask extends Task.Backgroundable {
 
-        private List<DbElement> dbElements;
-        private DbDataSource dataSource;
+        private final List<DbElement> dbElements;
+        private final DbDataSource dataSource;
         private String changeLog;
 
         GenerateChangeLogTask(@Nullable Project project, List<DbElement> dbElements, DbDataSource dataSource) {
@@ -74,8 +74,6 @@ public class GenerateChangesetAction extends AnAction {
 
         @Override
         public void run(@NotNull ProgressIndicator indicator) {
-            indicator.setText(LIQUIGEN_BACKGROUND_TASK_NAME);
-
             final LiquibaseWrapper liquibaseWrapper = new LiquibaseWrapper(getProject());
             changeLog = liquibaseWrapper.generateChangeLog(dbElements, dataSource);
         }
