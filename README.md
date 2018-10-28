@@ -51,7 +51,7 @@ gradlew buildPlugin
 ```
 You can find the distribution file in `build/distributions` folder.
 
-**Caution!** This plugin is configured to build against a bundled distribution of **IntelliJ Ultimate 2017.3**
+**Caution!** This plugin is configured to build against a bundled distribution of **IntelliJ Ultimate 2018.1**
 
 This can result in an extremely heavy and lengthy download of dependencies.
 If you want to build this plugin against your local IntelliJ IDE installation, please consult
