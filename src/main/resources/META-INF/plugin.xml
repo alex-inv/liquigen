@@ -1,7 +1,6 @@
 <idea-plugin>
     <id>com.alivanov.intellij.plugins.liquigen</id>
     <name>Liquigen</name>
-    <version>0.0.4</version>
     <vendor email="invs.man@gmail.com">Alexey Ivanov</vendor>
 
     <description><![CDATA[
@@ -37,14 +36,8 @@
     ]]>
     </change-notes>
 
-    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-    <idea-version since-build="173.*"/>
-
+    <depends>com.intellij.modules.ultimate</depends>
     <depends>com.intellij.database</depends>
-    <depends optional="true">com.intellij.modules.ultimate</depends>
-
-    <extensions defaultExtensionNs="com.intellij">
-    </extensions>
 
     <actions>
         <group id="LiquibaseGroup" text="Liquibase" popup="true">

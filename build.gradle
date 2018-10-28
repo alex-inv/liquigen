@@ -1,6 +1,9 @@
 plugins {
-    id 'org.jetbrains.intellij' version '0.2.5'
+    id 'org.jetbrains.intellij' version '0.3.12'
 }
+
+group 'com.alivanov.intellij.plugins.liquigen'
+version '0.0.5'
 
 apply plugin: "java"
 
@@ -15,7 +18,11 @@ dependencies {
 }
 
 intellij {
-    version='IU-2017.3'
+    version = 'IU-2018.1'
     plugins = ['DatabaseTools']
-    pluginName 'liquigen'
+    pluginName = 'Liquigen'
+}
+
+patchPluginXml {
+    untilBuild = '182.*'
 }
