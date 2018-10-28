@@ -25,6 +25,10 @@
     <change-notes><![CDATA[
         <ul>
             <li>
+                v0.0.5<br/>
+                IDEA 2018.* support added
+            </li>
+            <li>
                 v0.0.4<br/>
                 Added multi-select support in Database View
             </li>
