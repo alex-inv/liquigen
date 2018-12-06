@@ -3,11 +3,11 @@ package com.alivanov.intellij.plugins.liquigen;
 import com.alivanov.intellij.plugins.liquigen.command.AuthorParametrizedDiffToChangeLogCommand;
 import com.intellij.database.dataSource.DatabaseConnection;
 import com.intellij.database.dataSource.DatabaseConnectionManager;
-import com.intellij.database.dataSource.LocalDataSource;
 import com.intellij.database.model.DasObject;
 import com.intellij.database.psi.DbDataSource;
 import com.intellij.database.psi.DbElement;
 import com.intellij.database.psi.DbNamespaceImpl;
+import com.intellij.database.util.DbImplUtil;
 import com.intellij.database.util.GuardedRef;
 import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -28,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -122,7 +123,7 @@ class LiquibaseWrapper {
 
     private GuardedRef<DatabaseConnection> acquireConnection(DbDataSource dataSource) throws SQLException {
         return DatabaseConnectionManager.getInstance()
-                .build(this.project, (LocalDataSource) dataSource.getDelegate()).create();
+                .build(this.project, Objects.requireNonNull(DbImplUtil.getMaybeLocalDataSource(dataSource))).create();
     }
 
     private Database getDatabase(GuardedRef<DatabaseConnection> connectionRef) throws DatabaseException {
