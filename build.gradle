@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'com.alivanov.intellij.plugins.liquigen'
-version '0.0.5'
+version '0.0.6'
 
 apply plugin: "java"
 
@@ -18,11 +18,11 @@ dependencies {
 }
 
 intellij {
-    version = 'IU-2018.1'
+    version = 'IU-2018.3'
     plugins = ['DatabaseTools']
     pluginName = 'Liquigen'
 }
 
 patchPluginXml {
-    untilBuild = '182.*'
+    untilBuild = '183.*'
 }
