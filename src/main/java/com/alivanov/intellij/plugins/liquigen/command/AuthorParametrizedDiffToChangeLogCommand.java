@@ -1,6 +1,7 @@
 package com.alivanov.intellij.plugins.liquigen.command;
 
-import liquibase.command.DiffToChangeLogCommand;
+import liquibase.command.CommandResult;
+import liquibase.command.core.DiffToChangeLogCommand;
 import liquibase.diff.DiffResult;
 import liquibase.diff.output.changelog.DiffToChangeLog;
 import liquibase.util.StringUtils;
@@ -22,7 +23,7 @@ public class AuthorParametrizedDiffToChangeLogCommand extends DiffToChangeLogCom
     }
 
     @Override
-    protected Object run() throws Exception {
+    protected CommandResult run() throws Exception {
         DiffResult diffResult = createDiffResult();
 
         DiffToChangeLog changeLogWriter = new DiffToChangeLog(diffResult, getDiffOutputControl());
