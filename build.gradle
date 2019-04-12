@@ -18,11 +18,12 @@ dependencies {
 }
 
 intellij {
-    version = 'IU-2018.3'
+    version = 'IU-2019.1'
     plugins = ['DatabaseTools']
     pluginName = 'Liquigen'
+    updateSinceUntilBuild = false
 }
 
 patchPluginXml {
-    untilBuild = '183.*'
+    sinceBuild = '191.6183'
 }
