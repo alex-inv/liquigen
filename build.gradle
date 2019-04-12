@@ -12,7 +12,7 @@ repositories {
 }
 
 dependencies {
-    compile('org.liquibase:liquibase-core:3.6.2') {
+    compile('org.liquibase:liquibase-core:3.6.3') {
         exclude module: 'snakeyaml'
     }
 }
