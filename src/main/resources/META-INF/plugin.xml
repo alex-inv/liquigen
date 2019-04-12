@@ -25,6 +25,11 @@
     <change-notes><![CDATA[
         <ul>
             <li>
+                v0.0.7<br/>
+                IDEA and DataGrip support starting from 2019.1<br/>
+                Liquibase version upgraded to 3.6.3
+            </li>
+            <li>
                 v0.0.6<br/>
                 Changes for IDEA and DataGrip 2018.3
             </li>
