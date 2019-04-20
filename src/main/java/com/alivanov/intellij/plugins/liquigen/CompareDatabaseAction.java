@@ -14,7 +14,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.psi.PsiElement;
-import com.intellij.ui.components.JBList;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -52,18 +51,14 @@ public class CompareDatabaseAction extends AnAction {
     }
 
     private void showDataSourceSelectionPopup(AnActionEvent e, Project project, DbDataSource targetDataSource, List<DbDataSource> referenceDataSources) {
-        final JBList<DbDataSource> list = new JBList<>(JBList.createDefaultListModel(referenceDataSources));
-
-        list.setEmptyText(LIQUIGEN_NO_DATA_SOURCES_FOUND);
-        list.setCellRenderer(new DataSourceCellRenderer());
-
-        JBPopup popup = JBPopupFactory.getInstance()
-                .createListPopupBuilder(list)
-                .setTitle("Select reference Data Source")
-                .setItemChoosenCallback(
-                        () -> generateDiffChangeLog(project, targetDataSource, list.getSelectedValue()))
+        JBPopup jbPopup = JBPopupFactory.getInstance()
+                .createPopupChooserBuilder(referenceDataSources)
+                .setTitle("Select Reference Data Source")
+                .setRenderer(new DataSourceCellRenderer())
+                .setItemChosenCallback(value -> generateDiffChangeLog(project, targetDataSource, value))
                 .createPopup();
-        popup.showInBestPositionFor(e.getDataContext());
+
+        jbPopup.showInBestPositionFor(e.getDataContext());
     }
 
     private List<DbDataSource> collectOtherDataSourcesInProject(Project project, DbDataSource targetDataSource) {

@@ -9,8 +9,6 @@ class Constants {
 
     static final String LIQUIGEN_BACKGROUND_TASK_NAME = "Generating Change Log...";
 
-    static final String LIQUIGEN_NO_DATA_SOURCES_FOUND = "No alternate Data Sources found in the project";
-
     private Constants() {
 
     }
