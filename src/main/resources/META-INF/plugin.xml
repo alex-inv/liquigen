@@ -58,13 +58,13 @@
                           relative-to-action="DatabaseView.Restore.Native"/>
 
             <action id="generateChangesetAction"
-                    class="com.alivanov.intellij.plugins.liquigen.GenerateChangesetAction"
+                    class="com.alivanov.intellij.plugins.liquigen.action.GenerateChangesetAction"
                     text="Generate Changeset"
                     description="Generate Liquibase Changeset for Data Source">
             </action>
 
             <action id="compareDatabaseAction"
-                    class="com.alivanov.intellij.plugins.liquigen.CompareDatabaseAction"
+                    class="com.alivanov.intellij.plugins.liquigen.action.CompareDatabaseAction"
                     text="Generate Diff"
                     description="Generate Liquibase Difference for Data Source according to Reference Data Source">
             </action>

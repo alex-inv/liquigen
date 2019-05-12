@@ -34,11 +34,11 @@ import java.util.stream.Collectors;
 
 import static com.alivanov.intellij.plugins.liquigen.Constants.LIQUIGEN_BACKGROUND_TASK_NAME;
 
-class LiquibaseWrapper {
+public class LiquibaseWrapper {
 
     private final Project project;
 
-    LiquibaseWrapper(Project project) {
+    public LiquibaseWrapper(Project project) {
         this.project = project;
     }
 
