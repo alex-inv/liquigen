@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.alivanov.intellij.plugins.liquigen</id>
     <name>Liquigen</name>
-    <vendor email="invs.man@gmail.com">Alexey Ivanov</vendor>
+    <vendor email="invs.man@gmail.com" url="https://github.com/iman89/liquigen">Alexey Ivanov</vendor>
 
     <description><![CDATA[
         <h1>Liquibase Changeset Generation</h1><br/>
