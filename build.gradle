@@ -1,5 +1,5 @@
 plugins {
-    id 'org.jetbrains.intellij' version '0.4.7'
+    id 'org.jetbrains.intellij' version '0.4.8'
 }
 
 group 'com.alivanov.intellij.plugins.liquigen'
@@ -18,7 +18,7 @@ dependencies {
 }
 
 intellij {
-    version = 'IU-2019.1'
+    version = 'IU-2019.1.1'
     plugins = ['DatabaseTools']
     pluginName = 'Liquigen'
     updateSinceUntilBuild = false
