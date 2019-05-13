@@ -1,4 +1,4 @@
-package com.alivanov.intellij.plugins.liquigen;
+package com.alivanov.intellij.plugins.liquigen.wrapper;
 
 import com.intellij.ide.scratch.RootType;
 import com.intellij.ide.scratch.ScratchRootType;

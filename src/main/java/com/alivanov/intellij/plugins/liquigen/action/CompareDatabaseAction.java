@@ -1,7 +1,7 @@
 package com.alivanov.intellij.plugins.liquigen.action;
 
-import com.alivanov.intellij.plugins.liquigen.EditorWrapper;
-import com.alivanov.intellij.plugins.liquigen.LiquibaseWrapper;
+import com.alivanov.intellij.plugins.liquigen.wrapper.EditorWrapper;
+import com.alivanov.intellij.plugins.liquigen.wrapper.LiquibaseWrapper;
 import com.intellij.database.psi.DbDataSource;
 import com.intellij.database.psi.DbPsiFacade;
 import com.intellij.notification.Notification;
