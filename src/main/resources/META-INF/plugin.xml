@@ -53,12 +53,14 @@
     <depends>com.intellij.database</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <projectService serviceImplementation="com.alivanov.intellij.plugins.liquigen.settings.LiquigenConfig"/>
+
         <projectConfigurable instance="com.alivanov.intellij.plugins.liquigen.settings.LiquigenSettings"
                              id="com.alivanov.intellij.plugins.liquigen"
                              displayName="Liquigen"
                              groupId="tools"
                              groupWeight="0">
-        </projectConfigurable>
+        </projectConfigurable>>
     </extensions>
 
     <actions>

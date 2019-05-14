@@ -1,8 +1,8 @@
 package com.alivanov.intellij.plugins.liquigen.wrapper;
 
-import com.alivanov.intellij.plugins.liquigen.Extension;
 import com.alivanov.intellij.plugins.liquigen.liquibase.LiquigenDiffToChangeLogCommand;
 import com.alivanov.intellij.plugins.liquigen.liquibase.LiquigenGenerateChangelogCommand;
+import com.alivanov.intellij.plugins.liquigen.settings.LiquigenConfig;
 import com.intellij.database.dataSource.DatabaseConnection;
 import com.intellij.database.dataSource.DatabaseConnectionManager;
 import com.intellij.database.model.DasObject;
@@ -60,8 +60,9 @@ public class LiquibaseWrapper {
                     .setOutputStream(printStream)
                     .setCompareControl(createDefaultCompareControl());
             command.setDiffOutputControl(diffOutputControl);
-            command.setAuthor(System.getProperty("user.name"));
-            command.setExtension(Extension.XML);
+
+            command.setAuthor(getOrDefaultAuthor());
+            command.setExtension(LiquigenConfig.getInstance(project).getExtension());
 
             command.execute();
 
@@ -107,8 +108,9 @@ public class LiquibaseWrapper {
                     .setOutputStream(printStream)
                     .setCompareControl(createDefaultCompareControl());
             command.setDiffOutputControl(createDefaultDiffOutputControl());
-            command.setAuthor(System.getProperty("user.name"));
-            command.setExtension(Extension.XML);
+
+            command.setAuthor(getOrDefaultAuthor());
+            command.setExtension(LiquigenConfig.getInstance(project).getExtension());
 
             command.execute();
 
@@ -176,5 +178,13 @@ public class LiquibaseWrapper {
             indicator.setIndeterminate(false);
             indicator.setFraction(1.0);
         }
+    }
+
+    private String getOrDefaultAuthor() {
+        String author = LiquigenConfig.getInstance(project).getAuthor();
+        if (author == null || author.equals("")) {
+            author = System.getProperty("user.name");
+        }
+        return author;
     }
 }

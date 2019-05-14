@@ -1,15 +1,29 @@
 package com.alivanov.intellij.plugins.liquigen.settings;
 
-import com.intellij.openapi.options.Configurable;
-import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.options.SearchableConfigurable;
+import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.Nls;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
 import static com.alivanov.intellij.plugins.liquigen.Constants.LIQUIGEN_PLUGIN_NAME;
 
-public class LiquigenSettings implements Configurable {
+public class LiquigenSettings implements SearchableConfigurable {
+
+    LiquigenSettingsUI settingsUI;
+    LiquigenConfig settingsConfig;
+
+    public LiquigenSettings(Project project) {
+        settingsConfig = LiquigenConfig.getInstance(project);
+    }
+
+    @NotNull
+    @Override
+    public String getId() {
+        return "com.alivanov.intellij.plugins.liquigen";
+    }
 
     @Nls(capitalization = Nls.Capitalization.Title)
     @Override
@@ -20,16 +34,27 @@ public class LiquigenSettings implements Configurable {
     @Nullable
     @Override
     public JComponent createComponent() {
-        return null;
+        settingsUI = new LiquigenSettingsUI(settingsConfig);
+        return settingsUI.getSettingsPanel();
     }
 
     @Override
     public boolean isModified() {
-        return false;
+        return settingsUI.isModified();
     }
 
     @Override
-    public void apply() throws ConfigurationException {
+    public void apply() {
+        settingsUI.apply();
+    }
 
+    @Override
+    public void reset() {
+        settingsUI.reset();
+    }
+
+    @Override
+    public void disposeUIResources() {
+        settingsUI = null;
     }
 }
